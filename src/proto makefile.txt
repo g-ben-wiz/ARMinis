@@ -1,0 +1,1 @@
+g++ -o ARMinis main.cpp -I /usr/include/ -L /usr/lib/ -lglut -lGL -lGLU -lX11 -lXmu -lXi -lm 

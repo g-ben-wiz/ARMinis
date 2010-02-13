@@ -1,0 +1,22 @@
+This is just some basic stuff as we are moving docs around from google docs + different partitions, and writing the source code.
+
+
+Here are the packages we're using:
+
+sudo apt-get install mesa-common-dev mesademos libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev
+
+sudo apt-get install libglut3-dev libjpeg62-dev  
+
+sudo apt-get install libxi-dev libxmu-dev
+
+sudo apt-get install libgconf2-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev
+
+You need this env variable for ARTOOLKIT to work properly w/ gstreamer:
+
+export ARTOOLKIT_CONFIG="v4l2src device=/dev/video0 use-fixed-fps=false ! ffmpegcolorspace ! capsfilter caps=video/x-raw-rgb,bpp=24 ! identity name=artoolkit ! fakesink"
+
+Here's how we compile ARMinis (depends on where glut.h and libglut live)
+
+g++ -o ../bin/ARMinis main.cpp -I /usr/include/ -L /usr/lib/ -lglut -lGL -lGLU -lX11 -lXmu -lXi -lm
+
+src/make-map.c is the thing that makes our default minis board (a bunch of square polygons)
