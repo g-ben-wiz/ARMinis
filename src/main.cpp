@@ -6,7 +6,7 @@
 
 #include "ARMinisView.cpp"
 
-void simpleDraw();
+void render();
 void normalKeyFoo(unsigned char key, int x, int y);
 void reshapeFoo(int width, int height);
 
@@ -19,6 +19,17 @@ int main(int argc, char** argv)
 
     terrain.load_data("../terrain/dwarven-ruin.map");
 
+    Piece *dwarf = new Piece();
+    ::view.piece_list.push_back(dwarf);
+
+    Vertex dwarfloc;
+    dwarfloc.x = 400.0;
+    dwarfloc.y = 50.0;
+    dwarfloc.z = 100.0;
+    dwarfloc.w = 1.0;
+
+    dwarf->set_location(&dwarfloc);
+    
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(800, 680);
@@ -28,7 +39,7 @@ int main(int argc, char** argv)
 
 	glEnable(GL_DEPTH_TEST);
 
-	glutIdleFunc(simpleDraw);
+	glutIdleFunc(render);
 	glutReshapeFunc(reshapeFoo);
 
 	glutKeyboardFunc(normalKeyFoo);	
@@ -67,8 +78,15 @@ void normalKeyFoo(unsigned char key, int x, int y)
 	}
 }
 
-void simpleDraw()
+void render()
 {
-    view.simpleDraw();
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    //draw map
+    view.drawTerrain();
+
+    //draw all pieces in view.piece_list)
+    view.drawPieces();
+
+    glutSwapBuffers();
 }
 

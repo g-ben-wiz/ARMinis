@@ -38,7 +38,6 @@ void Terrain::load_data(char *filename)
     }
 
     k = vertices.size() - 1; 
-    printf("%d\n", vertices.size());
 
     tile_count_x = 50;
     tile_count_z = 50;

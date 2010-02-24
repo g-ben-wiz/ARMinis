@@ -8,7 +8,10 @@ private:
 	Terrain *terrain;
 
 public:
+    std::vector<Piece*> piece_list;
+
 	void setTerrain (Terrain* t);
 	
-	void simpleDraw();
+    void drawTerrain();
+    void drawPieces();
 };

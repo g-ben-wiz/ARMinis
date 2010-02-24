@@ -4,5 +4,5 @@
 class Model
 {
 private:
-	int filler;
+    Vertex position;
 };

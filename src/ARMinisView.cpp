@@ -5,18 +5,11 @@ void ARMinisView::setTerrain (Terrain* t) {
 	this->terrain = t;
 }
 
-void ARMinisView::simpleDraw()
+void ARMinisView::drawTerrain()
 {
 	//draw a 50 square x 1 x 50 square terrain
 	//each sq 30 px
 	//put a 3-square (150px) radius dais in the middle raised 30 px higher than the rest
-
-	//put all vertices into one vector &
-	//all indices into another
-
-	//then call glDrawArrays to render them all in order
-
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	//draw ground
 	glColor3f(0.6, 0.6, 0.6);
@@ -28,7 +21,46 @@ void ARMinisView::simpleDraw()
 	glDrawArrays(GL_QUADS, 0, 4 * 50 * 50);
 
     glDisableClientState(GL_VERTEX_ARRAY);
-        	
-	glutSwapBuffers();
 }
 
+void ARMinisView::drawPieces()
+{
+    glColor3f(1, 0, 0);
+
+    std::vector<Piece*>::iterator it;
+
+    for (it = piece_list.begin(); it < piece_list.end(); it++) 
+    {
+        Vertex *pos;
+        pos = (*it)->get_location();
+
+        glEnableClientState( GL_VERTEX_ARRAY );
+
+        //draw core
+
+        float vertices[16] = {
+            pos->x - 150.0, pos->y, pos->z -150.0, pos->w,
+            pos->x + 150.0, pos->y, pos->z -150.0, pos->w,
+            pos->x + 150.0, pos->y, pos->z +150.0, pos->w,
+            pos->x - 150.0, pos->y, pos->z +150.0, pos->w
+        };
+
+        glVertexPointer( 4, GL_FLOAT, 0, &vertices[0] );
+
+        glDrawArrays(GL_QUADS, 0, 4 );
+
+        //draw head
+        
+        //draw arms
+        
+        //draw legs
+        
+        //draw shirt
+        
+        //draw pants
+        
+        //draw held_obj        
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+}
