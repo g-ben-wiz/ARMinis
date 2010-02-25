@@ -7,8 +7,10 @@
 #include "ARMinisView.cpp"
 
 void render();
-void normalKeyFoo(unsigned char key, int x, int y);
-void reshapeFoo(int width, int height);
+void normal_key_foo(unsigned char key, int x, int y);
+void special_key_foo(int key, int x, int y);
+void reshape(int width, int height);
+void move_camera();
 
 Terrain terrain;
 ARMinisView view;
@@ -23,7 +25,7 @@ int main(int argc, char** argv)
     ::view.piece_list.push_back(dwarf);
 
     Vertex dwarfloc;
-    dwarfloc.x = 400.0;
+    dwarfloc.x = 000.0;
     dwarfloc.y = 50.0;
     dwarfloc.z = 100.0;
     dwarfloc.w = 1.0;
@@ -40,42 +42,80 @@ int main(int argc, char** argv)
 	glEnable(GL_DEPTH_TEST);
 
 	glutIdleFunc(render);
-	glutReshapeFunc(reshapeFoo);
+	glutReshapeFunc(reshape);
 
-	glutKeyboardFunc(normalKeyFoo);	
+	glutKeyboardFunc(normal_key_foo);	
+    glutSpecialFunc(special_key_foo);
 	
 	glutMainLoop();
 
 	return 0;
 }
 
-void reshapeFoo(int width, int height)
+void reshape(int width, int height)
 {
 	if (height == 0) 
 		height = 1;
 
-	GLfloat aspect_ratio = 1.0 * width / height;
+    ::view.cam.aspect_ratio = 1.0 * width/height;
+	glViewport(0, 0, width, height); 
 
-	GLfloat eye_x = 0.0, eye_y = 3000, eye_z = 0.0;
-	GLfloat center_x = 0.0, center_y = 0.0, center_z = 0.0;
+    Camera *cam = new Camera;
+    *cam = ::view.cam;
+
+    move_camera();
+
+    delete(cam);
+}
+
+void move_camera()
+{
+    Camera *cam = new Camera;
+    *cam = ::view.cam; 
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	glViewport(0, 0, width, height); 
-	gluPerspective(45, aspect_ratio, 1, 10000);
-	glMatrixMode(GL_MODELVIEW);
-	gluLookAt( eye_x, eye_y, eye_z,
-	       center_x, center_y, center_z, 
-	       0.0f, 0.0f, 1.0f); //up-vector
+	gluPerspective(cam->fov_y * cam->zoom, cam->aspect_ratio, cam->near, cam->far);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    gluLookAt( cam->eye_x, cam->eye_y, cam->eye_z,
+	       cam->center_x ,  cam->center_y, cam->center_z, 
+	       cam->up_x, cam->up_y, cam->up_z); //up-vector
+    delete(cam);
 }
 
-void normalKeyFoo(unsigned char key, int x, int y) 
+void normal_key_foo(unsigned char key, int x, int y) 
 {
-	if (key == 27) //esc
-	{
-		exit(0);
-	}
+    switch (key)
+    {
+        case 27:
+            exit(0);
+            break;
+        case 'z':
+            ::view.cam.zoom -= .10;
+            move_camera();
+            break;
+        case 'x':
+            ::view.cam.zoom += .10;
+            move_camera();
+    }
+}
+
+void special_key_foo(int key, int x, int y)
+{
+    switch (key)
+    {
+        case GLUT_KEY_LEFT :
+            view.cam.eye_x += 50;
+            move_camera();
+            break;
+        case GLUT_KEY_RIGHT:
+            view.cam.eye_x -= 50;
+            move_camera();
+
+    }
 }
 
 void render()
