@@ -1,0 +1,6 @@
+CAMERA CONTROLS
+
+Arrow keys := Pan
+CTRL + Arrow keys := Tilt/Rotate
+z := zoom in
+x := zoom out
