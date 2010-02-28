@@ -24,7 +24,6 @@ ARMinisView::ARMinisView()
     cam.far = 10000;
 
     cam.fov_y = 45;
-    cam.zoom = 1.0;
     cam.aspect_ratio = 1.0 * (800 / 680);
 }
 void ARMinisView::setTerrain (Terrain* t) {

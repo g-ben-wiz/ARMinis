@@ -7,7 +7,7 @@ struct Camera
     GLdouble eye_x, eye_y, eye_z,
              center_x, center_y, center_z,
              up_x, up_y, up_z,
-             near, far, fov_y, zoom, aspect_ratio,
+             near, far, fov_y, aspect_ratio,
              h_angle, v_angle;
 };
 

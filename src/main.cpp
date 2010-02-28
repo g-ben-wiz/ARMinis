@@ -74,7 +74,7 @@ void refresh_camera()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	gluPerspective(cam->fov_y * cam->zoom, cam->aspect_ratio, cam->near, cam->far);
+	gluPerspective(cam->fov_y, cam->aspect_ratio, cam->near, cam->far);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -84,32 +84,26 @@ void refresh_camera()
     delete(cam);
 }
 
-void set_los()
-{
-    float los_x, los_y, los_z; //line of sight
-    los_x = 0;
-    los_y = 0;
-    los_z = 0;
-
-    ::view.cam.center_x = ::view.cam.eye_x + los_x;
-    ::view.cam.center_y = ::view.cam.eye_y + los_y;
-    ::view.cam.center_z = ::view.cam.eye_z + los_z ;
-
-}
-
 void normal_key_foo(unsigned char key, int x, int y) 
 {
+    float zoom_mag = 30.0;
     switch (key)
     {
         case 27:
             exit(0);
             break;
-        case 'z':
-            ::view.cam.zoom -= .10;
+        case 'z': //need fixed so it's like cam.forward_x
+            ::view.cam.eye_x += (view.cam.up_x * zoom_mag);
+            ::view.cam.eye_y += (view.cam.up_y * zoom_mag);
+            ::view.cam.eye_z += (view.cam.up_z * zoom_mag);
+
             refresh_camera();
             break;
         case 'x':
-            ::view.cam.zoom += .10;
+            ::view.cam.eye_x -= (view.cam.up_x * zoom_mag);
+            ::view.cam.eye_y -= (view.cam.up_y * zoom_mag);
+            ::view.cam.eye_z -= (view.cam.up_z * zoom_mag);
+           
             refresh_camera();
     }
 }
@@ -117,14 +111,13 @@ void normal_key_foo(unsigned char key, int x, int y)
 void special_key_foo(int key, int x, int y)
 {
     int mod = glutGetModifiers();
-    float distance = 30.0;
+    float distance = 300.0;
     switch (key)
     {
         case GLUT_KEY_LEFT :
-           // view.cam.eye_x += 50;
             if (mod == GLUT_ACTIVE_CTRL) 
             {
-                ::view.cam.h_angle -= .01;
+                ::view.cam.h_angle -= .03;
                 ::view.cam.center_x = cos(::view.cam.h_angle) - sin(::view.cam.h_angle);
                 ::view.cam.center_z = cos(::view.cam.h_angle) + sin(::view.cam.h_angle);
                 
@@ -132,18 +125,25 @@ void special_key_foo(int key, int x, int y)
                 ::view.cam.center_z *= distance;
                 
             }
+            else
+            {
+                view.cam.eye_x += 50;
+            }
             refresh_camera();
             break;
         case GLUT_KEY_RIGHT:
-            //view.cam.eye_x -= 50;
             if (mod == GLUT_ACTIVE_CTRL) 
             {
-                ::view.cam.h_angle += .01;
+                ::view.cam.h_angle += .03;
                 ::view.cam.center_x = cos(::view.cam.h_angle) - sin(::view.cam.h_angle);
                 ::view.cam.center_z = cos(::view.cam.h_angle) + sin(::view.cam.h_angle);
                 
                 ::view.cam.center_x *= distance;
                 ::view.cam.center_z *= distance;
+            }
+            else 
+            {
+                view.cam.eye_x -= 50;
             }
             refresh_camera();
             break;
@@ -151,9 +151,9 @@ void special_key_foo(int key, int x, int y)
             //view.cam.eye_y -= 50;
             if (mod == GLUT_ACTIVE_CTRL) 
             {
-                ::view.cam.v_angle -= .01;
-                ::view.cam.center_y = cos(::view.cam.v_angle) -  sin(::view.cam.v_angle);
-                ::view.cam.center_z = cos(::view.cam.v_angle) +  sin(::view.cam.v_angle);
+                ::view.cam.v_angle -= .03;
+                ::view.cam.center_y = cos(::view.cam.v_angle) - sin(::view.cam.v_angle);
+                ::view.cam.center_z = cos(::view.cam.v_angle) + sin(::view.cam.v_angle);
                 
                 ::view.cam.center_y *= distance;
                 ::view.cam.center_z *= distance;
@@ -164,9 +164,9 @@ void special_key_foo(int key, int x, int y)
             //view.cam.eye_y -= 50;
             if (mod == GLUT_ACTIVE_CTRL) 
             {
-                ::view.cam.v_angle += .01;
-                ::view.cam.center_y = cos(::view.cam.v_angle) -  sin(::view.cam.v_angle);
-                ::view.cam.center_z = cos(::view.cam.v_angle) +  sin(::view.cam.v_angle);
+                ::view.cam.v_angle += .03;
+                ::view.cam.center_y = cos(::view.cam.v_angle) - sin(::view.cam.v_angle);
+                ::view.cam.center_z = cos(::view.cam.v_angle) + sin(::view.cam.v_angle);
                 
                 ::view.cam.center_y *= distance;
                 ::view.cam.center_z *= distance;
