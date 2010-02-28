@@ -1,6 +1,7 @@
 #include <GL/glut.h>
 #include <cstdlib>
 #include <stdio.h>
+#include <math.h>
 
 #include <vector>
 
@@ -10,7 +11,8 @@ void render();
 void normal_key_foo(unsigned char key, int x, int y);
 void special_key_foo(int key, int x, int y);
 void reshape(int width, int height);
-void move_camera();
+void refresh_camera();
+void set_los();
 
 Terrain terrain;
 ARMinisView view;
@@ -60,15 +62,11 @@ void reshape(int width, int height)
     ::view.cam.aspect_ratio = 1.0 * width/height;
 	glViewport(0, 0, width, height); 
 
-    Camera *cam = new Camera;
-    *cam = ::view.cam;
+    refresh_camera();
 
-    move_camera();
-
-    delete(cam);
 }
 
-void move_camera()
+void refresh_camera()
 {
     Camera *cam = new Camera;
     *cam = ::view.cam; 
@@ -81,9 +79,22 @@ void move_camera()
     glLoadIdentity();
 
     gluLookAt( cam->eye_x, cam->eye_y, cam->eye_z,
-	       cam->center_x ,  cam->center_y, cam->center_z, 
+	       cam->center_x, cam->center_y, cam->center_z, 
 	       cam->up_x, cam->up_y, cam->up_z); //up-vector
     delete(cam);
+}
+
+void set_los()
+{
+    float los_x, los_y, los_z; //line of sight
+    los_x = 0;
+    los_y = 0;
+    los_z = 0;
+
+    ::view.cam.center_x = ::view.cam.eye_x + los_x;
+    ::view.cam.center_y = ::view.cam.eye_y + los_y;
+    ::view.cam.center_z = ::view.cam.eye_z + los_z ;
+
 }
 
 void normal_key_foo(unsigned char key, int x, int y) 
@@ -95,26 +106,72 @@ void normal_key_foo(unsigned char key, int x, int y)
             break;
         case 'z':
             ::view.cam.zoom -= .10;
-            move_camera();
+            refresh_camera();
             break;
         case 'x':
             ::view.cam.zoom += .10;
-            move_camera();
+            refresh_camera();
     }
 }
 
 void special_key_foo(int key, int x, int y)
 {
+    int mod = glutGetModifiers();
+    float distance = 30.0;
     switch (key)
     {
         case GLUT_KEY_LEFT :
-            view.cam.eye_x += 50;
-            move_camera();
+           // view.cam.eye_x += 50;
+            if (mod == GLUT_ACTIVE_CTRL) 
+            {
+                ::view.cam.h_angle -= .01;
+                ::view.cam.center_x = cos(::view.cam.h_angle) - sin(::view.cam.h_angle);
+                ::view.cam.center_z = cos(::view.cam.h_angle) + sin(::view.cam.h_angle);
+                
+                ::view.cam.center_x *= distance;
+                ::view.cam.center_z *= distance;
+                
+            }
+            refresh_camera();
             break;
         case GLUT_KEY_RIGHT:
-            view.cam.eye_x -= 50;
-            move_camera();
-
+            //view.cam.eye_x -= 50;
+            if (mod == GLUT_ACTIVE_CTRL) 
+            {
+                ::view.cam.h_angle += .01;
+                ::view.cam.center_x = cos(::view.cam.h_angle) - sin(::view.cam.h_angle);
+                ::view.cam.center_z = cos(::view.cam.h_angle) + sin(::view.cam.h_angle);
+                
+                ::view.cam.center_x *= distance;
+                ::view.cam.center_z *= distance;
+            }
+            refresh_camera();
+            break;
+        case GLUT_KEY_UP:
+            //view.cam.eye_y -= 50;
+            if (mod == GLUT_ACTIVE_CTRL) 
+            {
+                ::view.cam.v_angle -= .01;
+                ::view.cam.center_y = cos(::view.cam.v_angle) -  sin(::view.cam.v_angle);
+                ::view.cam.center_z = cos(::view.cam.v_angle) +  sin(::view.cam.v_angle);
+                
+                ::view.cam.center_y *= distance;
+                ::view.cam.center_z *= distance;
+            }
+            refresh_camera();
+            break;
+        case GLUT_KEY_DOWN:
+            //view.cam.eye_y -= 50;
+            if (mod == GLUT_ACTIVE_CTRL) 
+            {
+                ::view.cam.v_angle += .01;
+                ::view.cam.center_y = cos(::view.cam.v_angle) -  sin(::view.cam.v_angle);
+                ::view.cam.center_z = cos(::view.cam.v_angle) +  sin(::view.cam.v_angle);
+                
+                ::view.cam.center_y *= distance;
+                ::view.cam.center_z *= distance;
+            }
+            refresh_camera();
     }
 }
 
@@ -125,7 +182,7 @@ void render()
     view.drawTerrain();
 
     //draw all pieces in view.piece_list)
-    view.drawPieces();
+    //view.drawPieces();
 
     glutSwapBuffers();
 }

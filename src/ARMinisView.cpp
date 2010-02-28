@@ -6,16 +6,19 @@ ARMinisView::ARMinisView()
     gluQuadricNormals(quadra, GLU_SMOOTH);
     
     cam.eye_x = 0.0;
-    cam.eye_y = 3000.0;
+    cam.eye_y = 10.0;
     cam.eye_z = 0.0;
 
-    cam.center_x = 0.0;
-    cam.center_y = 0.0;
-    cam.center_z = 0.0;
+    cam.h_angle = 0.5;
+    cam.v_angle = 0.5;
+
+    cam.center_x = cos(cam.h_angle) - sin(cam.h_angle);
+    cam.center_y = cos(cam.v_angle) - sin(cam.v_angle);
+    cam.center_z = cos(cam.h_angle) - sin(cam.h_angle);
 
     cam.up_x = 0.0;
-    cam.up_y = 0.0;
-    cam.up_z = 1.0;
+    cam.up_y = 1.0;
+    cam.up_z = 0.0;
 
     cam.near = 1;
     cam.far = 10000;
@@ -35,6 +38,7 @@ void ARMinisView::drawTerrain()
 	//put a 3-square (150px) radius dais in the middle raised 30 px higher than the rest
 
 	//draw ground
+    glPushMatrix();
 	glColor3f(0.6, 0.6, 0.6);
 	
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -44,6 +48,7 @@ void ARMinisView::drawTerrain()
 	glDrawArrays(GL_QUADS, 0, 4 * 50 * 50);
 
     glDisableClientState(GL_VERTEX_ARRAY);
+    glPopMatrix();
 }
 
 void ARMinisView::drawPieces()
