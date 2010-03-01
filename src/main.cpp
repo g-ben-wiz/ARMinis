@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(800, 680);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE); 
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB | GLUT_DOUBLE); 
 
 	glutCreateWindow("ARMinis");
 
@@ -117,9 +117,7 @@ void special_key_foo(int key, int x, int y)
             }
             else
             {
-                view.cam.eye_x += 50;
             }
-            //refresh_camera();
             break;
         case GLUT_KEY_RIGHT:
             if (mod == GLUT_ACTIVE_CTRL) 
@@ -130,7 +128,6 @@ void special_key_foo(int key, int x, int y)
             else 
             {
             }
-            //refresh_camera();
             break;
         case GLUT_KEY_UP:
             if (mod == GLUT_ACTIVE_CTRL) 
@@ -141,7 +138,6 @@ void special_key_foo(int key, int x, int y)
             else 
             {
             }
-            //refresh_camera();
             break;
         case GLUT_KEY_DOWN:
             if (mod == GLUT_ACTIVE_CTRL) 
@@ -152,13 +148,13 @@ void special_key_foo(int key, int x, int y)
             else
             {
             }
-            //refresh_camera();
     }
 }
 
 void render()
 {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
     //draw map
     view.drawTerrain();
 

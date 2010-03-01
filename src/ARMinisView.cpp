@@ -82,7 +82,7 @@ void ARMinisView::drawTerrain()
 	//draw ground
     glPushMatrix();
 	glColor3f(0.6, 0.6, 0.6);
-	
+    	
 	glEnableClientState( GL_VERTEX_ARRAY );
 
 	glVertexPointer( 4, GL_FLOAT, 0, &terrain->vertices.front());
