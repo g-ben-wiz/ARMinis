@@ -19,6 +19,7 @@ private:
 
 public:
     ARMinisView();
+    ~ARMinisView();
     std::vector<Piece*> piece_list;
     Camera cam;
 

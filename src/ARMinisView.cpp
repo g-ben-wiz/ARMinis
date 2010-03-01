@@ -7,11 +7,11 @@ ARMinisView::ARMinisView()
     
     cam.eye_x = 0.0;
     cam.eye_y = 10.0;
-    cam.eye_z = 5.0;
+    cam.eye_z = 0.0;
 
     cam.los_x = 0.0;
     cam.los_y = 0.0;
-    cam.los_z = 1.0;
+    cam.los_z = -1.0;
 
     cam.h_angle = 0.0;
     cam.v_angle = 0.0;
@@ -26,6 +26,12 @@ ARMinisView::ARMinisView()
     cam.fov_y = 45;
     cam.aspect_ratio = 1.0 * (800 / 680);
 }
+
+ARMinisView::~ARMinisView()
+{
+    gluDeleteQuadric(quadra);
+}
+
 void ARMinisView::setTerrain (Terrain* t) {
 	this->terrain = t;
 }
@@ -97,35 +103,37 @@ void ARMinisView::drawPieces()
         pos = (*it)->get_location();
 
         //draw core
-        float core_length = 420.0;
+        float core_length = 10.0;
         glPushMatrix();
 
         glColor3f(0, .7, .3);
         glTranslatef(pos->x, pos->y, pos->z);
-        gluCylinder(quadra, 180.0, 180.0, core_length, 20, 20);
+        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
+        gluCylinder(quadra, 5.0, 3.0, core_length, 20, 20);
         
         glPopMatrix();
 
         //draw head
-        float skull_radius = 100.0; 
-        float neck_length = 22.0;
+        float skull_radius = 2.5; 
+        float neck_length = .5;
 
         glPushMatrix();
 
         glColor3f(0, 0, 1);
-        glTranslatef(pos->x, pos->y, pos->z + core_length + skull_radius + neck_length);
-        gluSphere(quadra,skull_radius, 20, 22);
+        glTranslatef(pos->x, pos->y + core_length / 2 + neck_length, pos->z );
+        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
+        gluSphere(quadra,skull_radius, 20, 20);
 
         glPopMatrix();
 
         //draw arms
         //left upper
-        glColor3f (.3, .3, .7);
+        glColor3f (1, 1, 0);
         glPushMatrix();
         
-        glTranslatef(pos->x + (core_length / 2) + 20, pos->y, pos->z + 130);
-        glRotatef(-15.0, 0.0 ,1.0 ,0.0 ); 
-        gluCylinder(quadra, 60.0, 70.0, 280.0, 20, 20);
+        glTranslatef(pos->x + 5, pos->y , pos->z);
+        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
+        gluCylinder(quadra, 2.0, 1.5, 6.0, 20, 20);
 
         glPopMatrix();
 
@@ -133,15 +141,15 @@ void ARMinisView::drawPieces()
         glColor3f (.3, .7, .7);
         glPushMatrix();
         
-        glTranslatef(pos->x + (core_length / 2) + 40, pos->y + 100, pos->z - 95);
-        glRotatef(-5.0, 0.0 ,1.0 ,0.0 ); 
-        gluCylinder(quadra, 50.0, 60.0, 250.0, 20, 20);
+        glTranslatef(pos->x + 5, pos->y - 6, pos->z);
+        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
+        gluCylinder(quadra, 1.5, 1.0, 6.0, 20, 20);
 
         glPopMatrix();
 
         //left hand 
         glPushMatrix();
-        
+            
         glPopMatrix();
 
         //right upper
@@ -165,9 +173,9 @@ void ARMinisView::drawPieces()
         glColor3f(1, .7, .7);
         glPushMatrix();
 
-        glTranslatef(pos->x + (core_length / 2) - 50, pos->y,  pos->z - core_length * .5);
-        glRotatef(-5.0, 0.0 ,1.0 ,0.0 ); 
-        gluCylinder(quadra, 80.0, 70.0, 200.0, 20, 20);
+        glTranslatef(pos->x + 2, pos->y - 5 - 3,  pos->z); //y - half core len - half femur len
+        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
+        gluCylinder(quadra, 2.0, 1.5, 6.0, 20, 20);
 
         glPopMatrix();
 
@@ -175,14 +183,19 @@ void ARMinisView::drawPieces()
         glColor3f(.7, .7, 1);
         glPushMatrix();
         
-        glTranslatef(pos->x + (core_length / 2) - 50, pos->y,  pos->z - 200 - 200);
-        glRotatef(0.0, 0.0 ,1.0 ,0.0 ); 
-        gluCylinder(quadra, 60.0, 70.0, 200.0, 20, 20);
+        glTranslatef(pos->x + 2 , pos->y - 5 - 6 - 2.5,  pos->z);
+        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
+        gluCylinder(quadra, 1.5, 1.2, 5.0, 20, 20);
 
         glPopMatrix();
 
         //left foot
+        glColor3f(0, 1, 0);
         glPushMatrix();
+
+        glTranslatef(pos->x + 2 , pos->y - 5 - 6 - 5 - 2.25,  pos->z);
+        glRotatef(90.0, 0.0 ,0.0 ,1.0 ); 
+        gluCylinder(quadra, 1.0, 0.8, 2.5, 20, 20);
 
         glPopMatrix();
 

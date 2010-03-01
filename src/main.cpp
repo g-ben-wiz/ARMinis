@@ -27,8 +27,8 @@ int main(int argc, char** argv)
 
     Vertex dwarfloc;
     dwarfloc.x = 000.0;
-    dwarfloc.y = 50.0;
-    dwarfloc.z = 100.0;
+    dwarfloc.y = 20.0;
+    dwarfloc.z = -45.0;
     dwarfloc.w = 1.0;
 
     dwarf->set_location(&dwarfloc);
@@ -163,7 +163,7 @@ void render()
     view.drawTerrain();
 
     //draw all pieces in view.piece_list)
-    //view.drawPieces();
+    view.drawPieces();
 
     glutSwapBuffers();
 }
