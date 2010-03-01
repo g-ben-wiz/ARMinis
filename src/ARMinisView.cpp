@@ -7,14 +7,14 @@ ARMinisView::ARMinisView()
     
     cam.eye_x = 0.0;
     cam.eye_y = 10.0;
-    cam.eye_z = 0.0;
+    cam.eye_z = 5.0;
 
-    cam.h_angle = 0.5;
-    cam.v_angle = 0.5;
+    cam.los_x = 0.0;
+    cam.los_y = 0.0;
+    cam.los_z = 1.0;
 
-    cam.center_x = cos(cam.h_angle) - sin(cam.h_angle);
-    cam.center_y = cos(cam.v_angle) - sin(cam.v_angle);
-    cam.center_z = cos(cam.h_angle) - sin(cam.h_angle);
+    cam.h_angle = 0.0;
+    cam.v_angle = 0.0;
 
     cam.up_x = 0.0;
     cam.up_y = 1.0;
@@ -28,6 +28,24 @@ ARMinisView::ARMinisView()
 }
 void ARMinisView::setTerrain (Terrain* t) {
 	this->terrain = t;
+}
+
+void ARMinisView::turn_cam()
+{
+    float center_x, center_y, center_z;
+
+    cam.los_x = sin(cam.h_angle);
+    cam.los_y = -sin(cam.v_angle);
+    cam.los_z = -cos(cam.h_angle);
+
+    center_x = cam.eye_x + cam.los_x;
+    center_y = cam.eye_y + cam.los_y;
+    center_z = cam.eye_z + cam.los_z;
+
+    glLoadIdentity();
+    gluLookAt(cam.eye_x, cam.eye_y, cam.eye_z,
+              center_x, center_y, center_z,
+              cam.up_x, cam.up_y, cam.up_z);
 }
 
 void ARMinisView::drawTerrain()

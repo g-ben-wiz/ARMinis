@@ -12,7 +12,6 @@ void normal_key_foo(unsigned char key, int x, int y);
 void special_key_foo(int key, int x, int y);
 void reshape(int width, int height);
 void refresh_camera();
-void set_los();
 
 Terrain terrain;
 ARMinisView view;
@@ -78,8 +77,12 @@ void refresh_camera()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    float center_x = cam->eye_x + cam->los_x;
+    float center_y = cam->eye_y + cam->los_y;
+    float center_z = cam->eye_z + cam->los_z;
+
     gluLookAt( cam->eye_x, cam->eye_y, cam->eye_z,
-	       cam->center_x, cam->center_y, cam->center_z, 
+	       center_x, center_y, center_z, 
 	       cam->up_x, cam->up_y, cam->up_z); //up-vector
     delete(cam);
 }
@@ -92,17 +95,21 @@ void normal_key_foo(unsigned char key, int x, int y)
         case 27:
             exit(0);
             break;
-        case 'z': //need fixed so it's like cam.forward_x
+        case 'z': //need fixed so it's like cam.center_x
+            ::view.cam.eye_x -= (view.cam.up_x *  zoom_mag);
+            ::view.cam.eye_y -= (view.cam.up_y *  zoom_mag);
+            ::view.cam.eye_z -= (view.cam.up_z *  zoom_mag);
+
+            refresh_camera();
+//            glLoadIdentity();
+ //           gluLookAt(::view.cam.eye_x, ::view.cam.eye_y, ::view.cam.eye_z,
+                       
+  //                    ::view.cam.up_x, ::view.cam.up_y, ::view.cam.up_z );
+            break;
+        case 'x':
             ::view.cam.eye_x += (view.cam.up_x * zoom_mag);
             ::view.cam.eye_y += (view.cam.up_y * zoom_mag);
             ::view.cam.eye_z += (view.cam.up_z * zoom_mag);
-
-            refresh_camera();
-            break;
-        case 'x':
-            ::view.cam.eye_x -= (view.cam.up_x * zoom_mag);
-            ::view.cam.eye_y -= (view.cam.up_y * zoom_mag);
-            ::view.cam.eye_z -= (view.cam.up_z * zoom_mag);
            
             refresh_camera();
     }
@@ -112,66 +119,54 @@ void special_key_foo(int key, int x, int y)
 {
     int mod = glutGetModifiers();
     float distance = 300.0;
+    float zoom_mag = 30.0;
     switch (key)
     {
         case GLUT_KEY_LEFT :
             if (mod == GLUT_ACTIVE_CTRL) 
             {
                 ::view.cam.h_angle -= .03;
-                ::view.cam.center_x = cos(::view.cam.h_angle) - sin(::view.cam.h_angle);
-                ::view.cam.center_z = cos(::view.cam.h_angle) + sin(::view.cam.h_angle);
-                
-                ::view.cam.center_x *= distance;
-                ::view.cam.center_z *= distance;
+                ::view.turn_cam();                       
                 
             }
             else
             {
                 view.cam.eye_x += 50;
             }
-            refresh_camera();
+            //refresh_camera();
             break;
         case GLUT_KEY_RIGHT:
             if (mod == GLUT_ACTIVE_CTRL) 
             {
                 ::view.cam.h_angle += .03;
-                ::view.cam.center_x = cos(::view.cam.h_angle) - sin(::view.cam.h_angle);
-                ::view.cam.center_z = cos(::view.cam.h_angle) + sin(::view.cam.h_angle);
-                
-                ::view.cam.center_x *= distance;
-                ::view.cam.center_z *= distance;
+                ::view.turn_cam();                       
             }
             else 
             {
-                view.cam.eye_x -= 50;
             }
-            refresh_camera();
+            //refresh_camera();
             break;
         case GLUT_KEY_UP:
-            //view.cam.eye_y -= 50;
             if (mod == GLUT_ACTIVE_CTRL) 
             {
                 ::view.cam.v_angle -= .03;
-                ::view.cam.center_y = cos(::view.cam.v_angle) - sin(::view.cam.v_angle);
-                ::view.cam.center_z = cos(::view.cam.v_angle) + sin(::view.cam.v_angle);
-                
-                ::view.cam.center_y *= distance;
-                ::view.cam.center_z *= distance;
+                ::view.turn_cam();
             }
-            refresh_camera();
+            else 
+            {
+            }
+            //refresh_camera();
             break;
         case GLUT_KEY_DOWN:
-            //view.cam.eye_y -= 50;
             if (mod == GLUT_ACTIVE_CTRL) 
             {
                 ::view.cam.v_angle += .03;
-                ::view.cam.center_y = cos(::view.cam.v_angle) - sin(::view.cam.v_angle);
-                ::view.cam.center_z = cos(::view.cam.v_angle) + sin(::view.cam.v_angle);
-                
-                ::view.cam.center_y *= distance;
-                ::view.cam.center_z *= distance;
+                ::view.turn_cam();
             }
-            refresh_camera();
+            else
+            {
+            }
+            //refresh_camera();
     }
 }
 
