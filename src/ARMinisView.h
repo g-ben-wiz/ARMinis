@@ -26,5 +26,7 @@ public:
 	
     void drawTerrain();
     void drawPieces();
+
     void turn_cam();
+    void zoom(int h_direction, int v_direction);
 };

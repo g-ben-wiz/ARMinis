@@ -89,29 +89,17 @@ void refresh_camera()
 
 void normal_key_foo(unsigned char key, int x, int y) 
 {
-    float zoom_mag = 30.0;
     switch (key)
     {
         case 27:
             exit(0);
             break;
-        case 'z': //need fixed so it's like cam.center_x
-            ::view.cam.eye_x -= (view.cam.up_x *  zoom_mag);
-            ::view.cam.eye_y -= (view.cam.up_y *  zoom_mag);
-            ::view.cam.eye_z -= (view.cam.up_z *  zoom_mag);
-
-            refresh_camera();
-//            glLoadIdentity();
- //           gluLookAt(::view.cam.eye_x, ::view.cam.eye_y, ::view.cam.eye_z,
-                       
-  //                    ::view.cam.up_x, ::view.cam.up_y, ::view.cam.up_z );
+        case 'z': 
+            ::view.zoom(1, 1);
             break;
         case 'x':
-            ::view.cam.eye_x += (view.cam.up_x * zoom_mag);
-            ::view.cam.eye_y += (view.cam.up_y * zoom_mag);
-            ::view.cam.eye_z += (view.cam.up_z * zoom_mag);
-           
-            refresh_camera();
+            ::view.zoom(-1, -1);
+            break;
     }
 }
 
@@ -119,7 +107,6 @@ void special_key_foo(int key, int x, int y)
 {
     int mod = glutGetModifiers();
     float distance = 300.0;
-    float zoom_mag = 30.0;
     switch (key)
     {
         case GLUT_KEY_LEFT :
@@ -127,7 +114,6 @@ void special_key_foo(int key, int x, int y)
             {
                 ::view.cam.h_angle -= .03;
                 ::view.turn_cam();                       
-                
             }
             else
             {

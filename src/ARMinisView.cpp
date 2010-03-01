@@ -48,6 +48,25 @@ void ARMinisView::turn_cam()
               cam.up_x, cam.up_y, cam.up_z);
 }
 
+void ARMinisView::zoom(int h_direction, int v_direction)
+{
+    float speed = 10.0;
+    float center_x, center_y, center_z;
+
+    cam.eye_x = cam.eye_x + h_direction * cam.los_x * speed;
+    cam.eye_y = cam.eye_y + v_direction * cam.los_y * speed;
+    cam.eye_z = cam.eye_z + h_direction * cam.los_z * speed;
+
+    center_x = cam.eye_x + cam.los_x;
+    center_y = cam.eye_y + cam.los_y;
+    center_z = cam.eye_z + cam.los_z;
+
+    glLoadIdentity();
+    gluLookAt(cam.eye_x, cam.eye_y, cam.eye_z,
+              center_x, center_y, center_z,
+              cam.up_x, cam.up_y, cam.up_z);
+}
+
 void ARMinisView::drawTerrain()
 {
 	//draw a 50 square x 1 x 50 square terrain
