@@ -3,6 +3,6 @@
 
 class Model
 {
-private:
+public:
     Vertex position;
 };

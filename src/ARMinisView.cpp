@@ -96,138 +96,31 @@ void ARMinisView::drawTerrain()
 void ARMinisView::drawPieces()
 {
     std::vector<Piece*>::iterator it;
+    std::vector<longbone*>::iterator lb_it;
 
     for (it = piece_list.begin(); it < piece_list.end(); it++) 
     {
-        Vertex *pos;
-        pos = (*it)->get_location();
+        //draw each bone in each bone_list (in each piece)
+        for (lb_it = (*it)->longbone_list.begin(); lb_it < (*it)->longbone_list.end(); lb_it++)
+          {
+             glPushMatrix();
+             
+             glTranslatef((*lb_it)->center_point.x, (*lb_it)->center_point.y, (*lb_it)->center_point.z);
+             glRotatef((*lb_it)->rot_angle, (*lb_it)->rot_x, (*lb_it)->rot_y, (*lb_it)->rot_z);
 
-        //draw core
-        float core_length = 10.0;
-        glPushMatrix();
-
-        glColor3f(0, .7, .3);
-        glTranslatef(pos->x, pos->y, pos->z);
-        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
-        gluCylinder(quadra, 5.0, 3.0, core_length, 20, 20);
-        
-        glPopMatrix();
-
-        //draw head
-        float skull_radius = 2.5; 
-        float neck_length = .5;
-
-        glPushMatrix();
-
-        glColor3f(0, 0, 1);
-        glTranslatef(pos->x, pos->y + core_length / 2 + neck_length, pos->z );
-        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
-        gluSphere(quadra,skull_radius, 20, 20);
-
-        glPopMatrix();
-
-        //draw arms
-        //left upper
-        glColor3f (1, 1, 0);
-        glPushMatrix();
-        
-        glTranslatef(pos->x + 5, pos->y , pos->z);
-        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
-        gluCylinder(quadra, 2.0, 1.5, 6.0, 20, 20);
-
-        glPopMatrix();
-
-        //left lower
-        glColor3f (.3, .7, .7);
-        glPushMatrix();
-        
-        glTranslatef(pos->x + 5, pos->y - 6, pos->z);
-        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
-        gluCylinder(quadra, 1.5, 1.0, 6.0, 20, 20);
-
-        glPopMatrix();
-
-        //left hand 
-        glPushMatrix();
-            
-        glPopMatrix();
-
-        //right upper
-        glPushMatrix();
-        
-        glPopMatrix();
-
-        //right lower
-        glPushMatrix();
-        
-        glPopMatrix();
-
-        //right hand
-        glPushMatrix();
-        
-        glPopMatrix();
+             glColor3f((*lb_it)->rgb_r,(*lb_it)->rgb_g,(*lb_it)->rgb_b);
 
 
-        //draw legs
-        //left femur
-        glColor3f(1, .7, .7);
-        glPushMatrix();
+             gluCylinder(quadra, (*lb_it)->radius_bottom, (*lb_it)->radius_top, (*lb_it)->length, (*lb_it)->slices, (*lb_it)->stacks);
 
-        glTranslatef(pos->x + 2, pos->y - 5 - 3,  pos->z); //y - half core len - half femur len
-        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
-        gluCylinder(quadra, 2.0, 1.5, 6.0, 20, 20);
+             glPopMatrix(); 
+          }
 
-        glPopMatrix();
-
-        //left shin
-        glColor3f(.7, .7, 1);
-        glPushMatrix();
-        
-        glTranslatef(pos->x + 2 , pos->y - 5 - 6 - 2.5,  pos->z);
-        glRotatef(90.0, 1.0 ,0.0 ,0.0 ); 
-        gluCylinder(quadra, 1.5, 1.2, 5.0, 20, 20);
-
-        glPopMatrix();
-
-        //left foot
-        glColor3f(0, 1, 0);
-        glPushMatrix();
-
-        glTranslatef(pos->x + 2 , pos->y - 5 - 6 - 5 - 2.25,  pos->z);
-        glRotatef(90.0, 0.0 ,0.0 ,1.0 ); 
-        gluCylinder(quadra, 1.0, 0.8, 2.5, 20, 20);
-
-        glPopMatrix();
-
-        //right femur
-        glPushMatrix();
-
-        glPopMatrix();
-
-        //right shin
-        glPushMatrix();
-
-        glPopMatrix();
-        
-        //right foot
-        glPushMatrix();
-
-        glPopMatrix();
-
+        //TODO 
+        //gluSphere calls from spherebone_list
         //draw shirt
-        glPushMatrix();
-
-        glPopMatrix();
-
         //draw pants
-        glPushMatrix();
-
-        glPopMatrix();
-        
         //draw held_obj        
-        glPushMatrix();
-
-        glPopMatrix();
     }
 
 }

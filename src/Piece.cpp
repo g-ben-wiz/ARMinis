@@ -58,14 +58,58 @@ Piece::~Piece()
     delete(core);
 }
 
-void Piece::set_location(Vertex* loc)
+void Piece::load_data(char *filename)
 {
-    location = *loc;
-}
+    float pos_x, pos_y, pos_z;
+    float rot_angle;
+    float rot_x, rot_y, rot_z; //rotation in {x,y,z} axes
+    float rgb_r, rgb_g, rgb_b; //colors 0.0 - 1.0
+    float radius, radius_top, radius_bottom; 
+    float length;
+    int slices, stacks;
+    char bone_str[20], garbage[20];
 
-Vertex* Piece::get_location()
-{
-    return &location;
+    spherebone *sb = new spherebone;
+
+    FILE *fp = fopen(filename, "r");
+
+    while (fscanf(fp, "%s %f %f %f %f %f %f %f %f %f %f %f %f %f %d %d %s", 
+                  bone_str, 
+                  &pos_x, &pos_y, &pos_z,
+                  &rot_angle,
+                  &rot_x, &rot_y, &rot_z,
+                  &rgb_r, &rgb_g, &rgb_b, 
+                  &radius_top, &radius_bottom,
+                  &length, &slices, &stacks,
+                  garbage) 
+                    == 17)
+    {
+        longbone *lb = new longbone;
+        lb->center_point.w = 1.0;
+        lb->center_point.x = this->position.x + pos_x;
+        lb->center_point.y = this->position.y + pos_y;
+        lb->center_point.z = this->position.z + pos_z;
+
+        lb->rot_angle = rot_angle;
+        lb->rot_x = rot_x;
+        lb->rot_y = rot_y;
+        lb->rot_z = rot_z;
+
+        lb->rgb_r = rgb_r;
+        lb->rgb_g = rgb_g;
+        lb->rgb_b = rgb_b;
+
+        lb->radius_top = radius_top;
+        lb->radius_bottom = radius_bottom;
+
+        lb->length = length;
+        lb->slices = slices;
+        lb->stacks = stacks;
+
+        longbone_list.push_back(lb);
+    }
+
+    fclose(fp);
 }
 
 

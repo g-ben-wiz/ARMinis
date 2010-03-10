@@ -2,17 +2,25 @@
 
 struct longbone
 {
-    int slices;
-    float radius;
-    float length;
     Vertex center_point;
+    float rot_angle;
+    float rot_x, rot_y, rot_z;
+    float rgb_r, rgb_g, rgb_b;
+    float radius_top, radius_bottom;
+    float length;
+    int slices;
+    int stacks;
 };
 
 struct spherebone
 {
-    int slices, segments;
-    float radius;
     Vertex center_point;
+    float rot_angle;
+    float rot_x, rot_y, rot_z;
+    float rgb_r, rgb_g, rgb_b;
+    float radius;
+    int slices;
+    int stacks;
 };
 
 class Piece : public Model
@@ -29,14 +37,14 @@ class Piece : public Model
     Model *held_obj; //the thing the mini is holding in right hand
     Model *shirt;
     Model *pants;
-
-    Vertex location;
     
     public:
     Piece();
     ~Piece();
+    void load_data(char *filename);
+    std::vector<longbone*> longbone_list;
+    std::vector<spherebone*> spherebone_list;
 
-    void set_location(Vertex* loc);
     void set_l_arm_upper(longbone* bone);
     void set_l_arm_lower(longbone* bone);
     void set_r_arm_upper(longbone* bone);
