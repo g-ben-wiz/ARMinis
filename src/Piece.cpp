@@ -2,25 +2,6 @@
 
 Piece::Piece()
 {
-    l_arm_upper = new longbone;
-    l_arm_lower = new longbone;
-    r_arm_upper = new longbone;
-    r_arm_lower = new longbone;
-    
-    l_hand = new spherebone;
-    r_hand = new spherebone;
-
-    l_femur = new longbone;
-    l_shin = new longbone;
-    l_foot = new longbone;
-    r_femur = new longbone;
-    r_shin = new longbone;
-    r_foot = new longbone;
-
-    core = new longbone;
-
-    face = new longbone;
-    skull = new spherebone;
 
     held_obj = NULL;
     shirt = NULL; 
@@ -29,33 +10,7 @@ Piece::Piece()
 
 Piece::~Piece()
 {
-    delete(l_arm_upper);
-    delete(l_arm_lower);
-    delete(r_arm_upper);
-    delete(r_arm_lower);
-    delete(l_hand);
-    delete(r_hand);
-
-    delete(l_femur);
-    delete(l_shin);
-    delete(l_foot);
-    delete(r_femur);
-    delete(r_shin);
-    delete(r_foot);
-
-    delete(face);
-    delete(skull);
-    
-    if (held_obj)
-        delete(held_obj);
-
-    if (shirt)
-        delete(shirt);
-
-    if (pants)
-        delete(pants);
-
-    delete(core);
+    //remove all bones in bone_list
 }
 
 void Piece::load_data(char *filename)
@@ -67,49 +22,79 @@ void Piece::load_data(char *filename)
     float radius, radius_top, radius_bottom; 
     float length;
     int slices, stacks;
-    char bone_str[20], garbage[20];
-
-    spherebone *sb = new spherebone;
+    char bone_str[20], bone_name[20];
 
     FILE *fp = fopen(filename, "r");
 
-    while (fscanf(fp, "%s %f %f %f %f %f %f %f %f %f %f %f %f %f %d %d %s", 
-                  bone_str, 
-                  &pos_x, &pos_y, &pos_z,
-                  &rot_angle,
-                  &rot_x, &rot_y, &rot_z,
-                  &rgb_r, &rgb_g, &rgb_b, 
-                  &radius_top, &radius_bottom,
-                  &length, &slices, &stacks,
-                  garbage) 
-                    == 17)
+    while (!feof(fp))
     {
-        longbone *lb = new longbone;
-        lb->center_point.w = 1.0;
-        lb->center_point.x = this->position.x + pos_x;
-        lb->center_point.y = this->position.y + pos_y;
-        lb->center_point.z = this->position.z + pos_z;
+        //load line
+        if (fscanf(fp, "%s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %d %d %s", 
+                      bone_str, 
+                      &pos_x, &pos_y, &pos_z,
+                      &rot_angle,
+                      &rot_x, &rot_y, &rot_z,
+                      &rgb_r, &rgb_g, &rgb_b, 
+                      &radius, &radius_top, &radius_bottom,
+                      &length, &slices, &stacks,
+                      bone_name) 
+                        == 18)
+        {
+            if (strcmp(bone_str, "longbone") == 0)
+            {   
+                longbone *lb = new longbone;
+                lb->center_point.w = 1.0;
+                lb->center_point.x = this->position.x + pos_x;
+                lb->center_point.y = this->position.y + pos_y;
+                lb->center_point.z = this->position.z + pos_z;
 
-        lb->rot_angle = rot_angle;
-        lb->rot_x = rot_x;
-        lb->rot_y = rot_y;
-        lb->rot_z = rot_z;
+                lb->rot_angle = rot_angle;
+                lb->rot_x = rot_x;
+                lb->rot_y = rot_y;
+                lb->rot_z = rot_z;
 
-        lb->rgb_r = rgb_r;
-        lb->rgb_g = rgb_g;
-        lb->rgb_b = rgb_b;
+                lb->rgb_r = rgb_r;
+                lb->rgb_g = rgb_g;
+                lb->rgb_b = rgb_b;
 
-        lb->radius_top = radius_top;
-        lb->radius_bottom = radius_bottom;
+                lb->radius_top = radius_top;
+                lb->radius_bottom = radius_bottom;
 
-        lb->length = length;
-        lb->slices = slices;
-        lb->stacks = stacks;
+                lb->length = length;
+                lb->slices = slices;
+                lb->stacks = stacks;
 
-        longbone_list.push_back(lb);
+                longbone_list.push_back(lb);
+            }
+            else if (strcmp(bone_str, "spherebone") == 0)
+            {
+                spherebone *sb = new spherebone;
+
+                sb->center_point.w = 1.0;
+                sb->center_point.x = this->position.x + pos_x;
+                sb->center_point.y = this->position.y + pos_y;
+                sb->center_point.z = this->position.z + pos_z;
+
+                sb->rot_angle = rot_angle;
+                sb->rot_x = rot_x;
+                sb->rot_y = rot_y;
+                sb->rot_z = rot_z;
+                sb->rgb_r = rgb_r;
+                sb->rgb_g = rgb_g;
+                sb->rgb_b = rgb_b;
+
+                sb->radius = radius;
+                sb->slices = slices;
+                sb->stacks = stacks;
+
+                spherebone_list.push_back(sb);
+
+            }
+        }
     }
 
-    fclose(fp);
+        fclose(fp);
+
 }
 
 

@@ -1,4 +1,5 @@
 #include "Model.cpp"
+#include "string.h"
 
 struct longbone
 {

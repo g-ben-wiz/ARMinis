@@ -23,16 +23,14 @@ int main(int argc, char** argv)
     terrain.load_data("../terrain/dwarven-ruin.map");
 
     Piece *dwarf = new Piece();
+    dwarf->load_data("../model/dwarf.mod");
     ::view.piece_list.push_back(dwarf);
 
-    Vertex dwarfloc;
-    dwarfloc.x = 000.0;
-    dwarfloc.y = 20.0;
-    dwarfloc.z = -45.0;
-    dwarfloc.w = 1.0;
+    dwarf->position.x = 000.0;
+    dwarf->position.y = 20.0;
+    dwarf->position.z = -45.0;
+    dwarf->position.w = 1.0;
 
-    dwarf->set_location(&dwarfloc);
-    
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(800, 680);

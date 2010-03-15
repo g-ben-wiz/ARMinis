@@ -97,27 +97,38 @@ void ARMinisView::drawPieces()
 {
     std::vector<Piece*>::iterator it;
     std::vector<longbone*>::iterator lb_it;
+    std::vector<spherebone*>::iterator sb_it;
 
     for (it = piece_list.begin(); it < piece_list.end(); it++) 
     {
         //draw each bone in each bone_list (in each piece)
+        //draw longbones
         for (lb_it = (*it)->longbone_list.begin(); lb_it < (*it)->longbone_list.end(); lb_it++)
           {
              glPushMatrix();
              
              glTranslatef((*lb_it)->center_point.x, (*lb_it)->center_point.y, (*lb_it)->center_point.z);
              glRotatef((*lb_it)->rot_angle, (*lb_it)->rot_x, (*lb_it)->rot_y, (*lb_it)->rot_z);
-
              glColor3f((*lb_it)->rgb_r,(*lb_it)->rgb_g,(*lb_it)->rgb_b);
-
-
              gluCylinder(quadra, (*lb_it)->radius_bottom, (*lb_it)->radius_top, (*lb_it)->length, (*lb_it)->slices, (*lb_it)->stacks);
 
              glPopMatrix(); 
           }
 
+//display spherebones
+
+        for (sb_it = (*it)->spherebone_list.begin(); sb_it < (*it)->spherebone_list.end(); sb_it++)
+        {
+            glPushMatrix();
+
+            glTranslatef((*sb_it)->center_point.x, (*sb_it)->center_point.y, (*sb_it)->center_point.z);
+            glRotatef((*sb_it)->rot_angle, (*sb_it)->rot_x, (*sb_it)->rot_y, (*sb_it)->rot_z);
+            glColor3f((*sb_it)->rgb_r,(*sb_it)->rgb_g,(*sb_it)->rgb_b);
+            gluSphere(quadra, (*sb_it)->radius, (*sb_it)->slices, (*sb_it)->stacks);
+
+            glPopMatrix();
+        }
         //TODO 
-        //gluSphere calls from spherebone_list
         //draw shirt
         //draw pants
         //draw held_obj        
