@@ -2,7 +2,6 @@
 
 Piece::Piece()
 {
-
     held_obj = NULL;
     shirt = NULL; 
     pants = NULL;
@@ -44,9 +43,9 @@ void Piece::load_data(char *filename)
             {   
                 longbone *lb = new longbone;
                 lb->center_point.w = 1.0;
-                lb->center_point.x = this->position.x + pos_x;
-                lb->center_point.y = this->position.y + pos_y;
-                lb->center_point.z = this->position.z + pos_z;
+                lb->center_point.x = pos_x;
+                lb->center_point.y = pos_y;
+                lb->center_point.z = pos_z;
 
                 lb->rot_angle = rot_angle;
                 lb->rot_x = rot_x;
@@ -71,9 +70,9 @@ void Piece::load_data(char *filename)
                 spherebone *sb = new spherebone;
 
                 sb->center_point.w = 1.0;
-                sb->center_point.x = this->position.x + pos_x;
-                sb->center_point.y = this->position.y + pos_y;
-                sb->center_point.z = this->position.z + pos_z;
+                sb->center_point.x = pos_x;
+                sb->center_point.y = pos_y;
+                sb->center_point.z = pos_z;
 
                 sb->rot_angle = rot_angle;
                 sb->rot_x = rot_x;
@@ -97,6 +96,14 @@ void Piece::load_data(char *filename)
 
 }
 
+void Piece::name_bone(char *bone_name, longbone* lb)
+{
+
+}
+
+void Piece::name_bone(char *bone_name, spherebone* sb)
+{
+}
 
 void Piece::set_l_arm_upper(longbone* bone){*l_arm_upper = *bone;}
 void Piece::set_l_arm_lower(longbone* bone){*l_arm_lower = *bone;}

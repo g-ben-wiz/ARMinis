@@ -6,7 +6,7 @@ ARMinisView::ARMinisView()
     gluQuadricNormals(quadra, GLU_SMOOTH);
     
     cam.eye_x = 0.0;
-    cam.eye_y = 10.0;
+    cam.eye_y = 40.0;
     cam.eye_z = 0.0;
 
     cam.los_x = 0.0;
@@ -95,6 +95,9 @@ void ARMinisView::drawTerrain()
 
 void ARMinisView::drawPieces()
 {
+    float center_x, center_y, center_z;
+    float rot_total, rot_x, rot_y, rot_z;
+
     std::vector<Piece*>::iterator it;
     std::vector<longbone*>::iterator lb_it;
     std::vector<spherebone*>::iterator sb_it;
@@ -106,8 +109,13 @@ void ARMinisView::drawPieces()
         for (lb_it = (*it)->longbone_list.begin(); lb_it < (*it)->longbone_list.end(); lb_it++)
           {
              glPushMatrix();
+
+             //total translations
+             center_x = (*lb_it)->center_point.x + (*it)->position.x; 
+             center_y = (*lb_it)->center_point.y + (*it)->position.y; 
+             center_z = (*lb_it)->center_point.z + (*it)->position.z; 
              
-             glTranslatef((*lb_it)->center_point.x, (*lb_it)->center_point.y, (*lb_it)->center_point.z);
+             glTranslatef(center_x, center_y, center_z);
              glRotatef((*lb_it)->rot_angle, (*lb_it)->rot_x, (*lb_it)->rot_y, (*lb_it)->rot_z);
              glColor3f((*lb_it)->rgb_r,(*lb_it)->rgb_g,(*lb_it)->rgb_b);
              gluCylinder(quadra, (*lb_it)->radius_bottom, (*lb_it)->radius_top, (*lb_it)->length, (*lb_it)->slices, (*lb_it)->stacks);
@@ -121,7 +129,11 @@ void ARMinisView::drawPieces()
         {
             glPushMatrix();
 
-            glTranslatef((*sb_it)->center_point.x, (*sb_it)->center_point.y, (*sb_it)->center_point.z);
+            center_x = (*sb_it)->center_point.x + (*it)->position.x; 
+            center_y = (*sb_it)->center_point.y + (*it)->position.y; 
+            center_z = (*sb_it)->center_point.z + (*it)->position.z; 
+
+            glTranslatef(center_x, center_y, center_z);
             glRotatef((*sb_it)->rot_angle, (*sb_it)->rot_x, (*sb_it)->rot_y, (*sb_it)->rot_z);
             glColor3f((*sb_it)->rgb_r,(*sb_it)->rgb_g,(*sb_it)->rgb_b);
             gluSphere(quadra, (*sb_it)->radius, (*sb_it)->slices, (*sb_it)->stacks);
@@ -129,6 +141,7 @@ void ARMinisView::drawPieces()
             glPopMatrix();
         }
         //TODO 
+        //total rotations
         //draw shirt
         //draw pants
         //draw held_obj        

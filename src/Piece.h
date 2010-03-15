@@ -43,6 +43,8 @@ class Piece : public Model
     Piece();
     ~Piece();
     void load_data(char *filename);
+    void name_bone(char *bone_name, longbone* lb);
+    void name_bone(char *bone_name, spherebone* sb);
     std::vector<longbone*> longbone_list;
     std::vector<spherebone*> spherebone_list;
 

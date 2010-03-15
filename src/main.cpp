@@ -26,10 +26,20 @@ int main(int argc, char** argv)
     dwarf->load_data("../model/dwarf.mod");
     ::view.piece_list.push_back(dwarf);
 
-    dwarf->position.x = 000.0;
+    dwarf->position.x = 100.0;
     dwarf->position.y = 20.0;
     dwarf->position.z = -45.0;
     dwarf->position.w = 1.0;
+
+    
+    Piece *dwarf2 = new Piece();
+    dwarf2->load_data("../model/dwarf.mod");
+    ::view.piece_list.push_back(dwarf2);
+
+    dwarf2->position.x = -100.0;
+    dwarf2->position.y = 20.0;
+    dwarf2->position.z = -45.0;
+    dwarf2->position.w = 1.0;
 
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
