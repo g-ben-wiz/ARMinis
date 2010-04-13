@@ -1,6 +1,6 @@
 #include "Model.cpp"
 #include "string.h"
-
+#pragma once
 struct longbone
 {
     Vertex center_point;

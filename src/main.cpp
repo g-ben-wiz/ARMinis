@@ -5,16 +5,18 @@
 
 #include <vector>
 
-#include "ARMinisView.cpp"
+#include "ARMinisControl.cpp"
 
 void render();
 void normal_key_foo(unsigned char key, int x, int y);
 void special_key_foo(int key, int x, int y);
+void mouse_foo(int button, int state, int x, int y);
 void reshape(int width, int height);
 void refresh_camera();
 
 Terrain terrain;
 ARMinisView view;
+ARMinisControl control;
 
 int main(int argc, char** argv)
 {
@@ -25,22 +27,9 @@ int main(int argc, char** argv)
     Piece *dwarf = new Piece();
     dwarf->load_data("../model/dwarf.mod");
     ::view.piece_list.push_back(dwarf);
-
-    dwarf->position.x = 100.0;
-    dwarf->position.y = 20.0;
-    dwarf->position.z = -45.0;
-    dwarf->position.w = 1.0;
-
     
-    Piece *dwarf2 = new Piece();
-    dwarf2->load_data("../model/dwarf.mod");
-    ::view.piece_list.push_back(dwarf2);
-
-    dwarf2->position.x = -100.0;
-    dwarf2->position.y = 20.0;
-    dwarf2->position.z = -45.0;
-    dwarf2->position.w = 1.0;
-
+    control.move_to(dwarf, &terrain, 25 * 30.f, 0.f, 25 * 30.f); 
+    
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
 	glutInitWindowSize(800, 680);
@@ -55,6 +44,8 @@ int main(int argc, char** argv)
 
 	glutKeyboardFunc(normal_key_foo);	
     glutSpecialFunc(special_key_foo);
+
+    glutMouseFunc(mouse_foo);
 	
 	glutMainLoop();
 
@@ -156,6 +147,83 @@ void special_key_foo(int key, int x, int y)
             else
             {
             }
+    }
+}
+
+void mouse_foo(int button, int state, int x, int y)
+{
+    float pos_x, pos_y, pos_z;
+    float xhi, xlow, zhi, zlow, yhi, ylow; //bandaid for hitbox / height
+    int i;
+    GLdouble clickray_near_x, clickray_near_y, clickray_near_z;
+    GLdouble clickray_far_x, clickray_far_y, clickray_far_z;
+    GLdouble raydir_x, raydir_y, raydir_z;
+    GLdouble raymag;
+    std::vector<Piece*>::iterator it;
+
+    if (state == GLUT_DOWN)
+    {
+        if (button == GLUT_LEFT_BUTTON)
+        {
+            /*
+            One way to generate a pick ray is to call gluUnProject()  twice for the mouse location, first with winz  of 0.0 (at the near plane), then with winz of 1.0 (at the far plane). Subtract the near plane call's results from the far plane call's results to obtain the XYZ direction vector of your ray. The ray origin is the view location, of course.
+
+
+            */
+            //for drag for x 
+            // objPos += mouseMovementx*scale*RightAxis
+
+            GLdouble model_matrix[16];
+            glGetDoublev(GL_MODELVIEW_MATRIX,model_matrix);
+            GLdouble proj_matrix[16];
+            glGetDoublev(GL_PROJECTION_MATRIX,proj_matrix);
+            int viewport[4];
+            glGetIntegerv(GL_VIEWPORT,viewport);
+            
+            for (it = view.piece_list.begin(); it < view.piece_list.end(); it++)
+            {
+                pos_x = (*it)->position.x;
+                pos_y = (*it)->position.y;
+                pos_z = (*it)->position.z;
+
+                yhi = pos_y + 40.0;
+                ylow = pos_y - 40.0;
+                xhi = pos_x + 30.0;
+                xlow = pos_x - 30.0;
+                zhi = pos_z + 30.0;
+                zlow = pos_z - 30.0;
+
+                gluUnProject(x, y, 0, 
+                           model_matrix, proj_matrix, viewport,
+                           &clickray_near_x, &clickray_near_y, &clickray_near_z);
+
+                gluUnProject(x, y, 1, 
+                           model_matrix, proj_matrix, viewport,
+                           &clickray_far_x, &clickray_far_y, &clickray_far_z);
+
+                raydir_x = clickray_far_x - clickray_near_x;
+                raydir_y = clickray_far_y - clickray_near_y;
+                raydir_z = clickray_far_z - clickray_near_z;
+
+                raymag = raydir_x * raydir_x + raydir_y * raydir_y + raydir_z * raydir_z;
+                raymag = sqrt(raymag); 
+
+                raydir_x = raydir_x / raymag;
+                raydir_y = raydir_y / raymag;
+                raydir_z = raydir_z / raymag;
+            
+//                printf("%f %f %f\n", raydir_x, raydir_y, raydir_z);
+
+                for (i = 1; i < 1000 && i * raydir_x < xhi && i * raydir_y < yhi && i * raydir_z < zhi; i++)
+                    if (i * raydir_x < xhi && xlow < i * raydir_x)
+                        if (i * raydir_y < yhi && ylow < i * raydir_y)
+                            if (i * raydir_z < zhi && zlow < i * raydir_z)
+                            {
+                             printf("u clicked\n");
+                            }
+            }
+
+        }
     }
 }
 
