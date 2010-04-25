@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     dwarf->load_data("../model/dwarf.mod");
     ::view.piece_list.push_back(dwarf);
     
-    control.move_to(dwarf, &terrain, 25 * 30.f, 0.f, 25 * 30.f); 
+    control.move_to(dwarf, &terrain, 30 * 30.f, 0.f, 30 * 30.f); 
     
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
@@ -184,13 +184,13 @@ void mouse_foo(int button, int state, int x, int y)
             */
 
             GLdouble model_matrix[16];
-            glGetDoublev(GL_MODELVIEW_MATRIX,model_matrix);
-
             GLdouble proj_matrix[16];
-            glGetDoublev(GL_PROJECTION_MATRIX,proj_matrix);
-
             int viewport[4];
+
+            glGetDoublev(GL_MODELVIEW_MATRIX,model_matrix);
+            glGetDoublev(GL_PROJECTION_MATRIX,proj_matrix);
             glGetIntegerv(GL_VIEWPORT,viewport);
+            d_click_y = double (viewport[3] - y - 1);
             
             for (it = view.piece_list.begin(); it < view.piece_list.end(); it++)
             {
@@ -198,17 +198,19 @@ void mouse_foo(int button, int state, int x, int y)
                 pos_y = (*it)->position.y;
                 pos_z = (*it)->position.z;
 
-                top.y = pos_y + 15.0;
+                top.y = pos_y + 45.0;
                 top.x = pos_x;
                 top.z = pos_z;
 
                 base_low.x = pos_x - 15.0;
                 base_low.y = pos_y;
-                base_low.z = pos_z - 15.0;
+                //base_low.z = pos_z - 15.0;
+                base_low.z = pos_z;
 
                 base_high.x = pos_x + 15.0;
                 base_high.y = pos_y;
-                base_high.z = pos_z + 15.0;
+                //base_high.z = pos_z + 15.0;
+                base_high.z = pos_z; 
 
                 gluUnProject ((double) x, d_click_y, 1.0, model_matrix, proj_matrix, viewport, &clickray_far.x, &clickray_far.y, &clickray_far.z);
                 gluUnProject ((double) x, d_click_y, 0.0, model_matrix, proj_matrix, viewport, &clickray_near.x, &clickray_near.y, &clickray_near.z);
@@ -266,6 +268,7 @@ Vertex cross3(Vertex v1, Vertex v2)
 bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2, Vertex &HitPos)
 {
    Vertex normal, intersect_pos;
+   float normal_mag;
 
    // Find Triangle Normal
    Vertex A, B;
@@ -278,6 +281,13 @@ bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2,
    B.z = TP3.z - TP1.z;
 
    normal = cross3( A, B);
+   normal_mag = (normal.x * normal.x) + (normal.y * normal.y) + (normal.z * normal.z);
+   normal_mag = sqrt(normal_mag);
+
+   normal.x /= normal_mag;
+   normal.y /= normal_mag;
+   normal.z /= normal_mag;
+   
    //Normal.Normalize(); // not really needed
 
    // Find distance from LP1 and LP2 to the plane defined by the triangle
@@ -298,10 +308,6 @@ bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2,
    float r = (-Dist1 / (Dist2 - Dist1));
 
    // Find point on the line that intersects with the plane
-   intersect_pos.x = LP2.x - LP1.x;
-   intersect_pos.y = LP2.y - LP1.y;
-   intersect_pos.z = LP2.z - LP1.z;
-
    intersect_pos.x = LP2.x - LP1.x;
    intersect_pos.y = LP2.y - LP1.y;
    intersect_pos.z = LP2.z - LP1.z;
@@ -342,15 +348,11 @@ bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2,
    A.z = TP1.z - TP3.z;
    vTest = cross3( normal, A);
    
-   //this might be tp3?
-   B.x = intersect_pos.x - TP1.x;
-   B.y = intersect_pos.y - TP1.y;
-   B.z = intersect_pos.z - TP1.z;
+   B.x = intersect_pos.x - TP3.x;
+   B.y = intersect_pos.y - TP3.y;
+   B.z = intersect_pos.z - TP3.z;
    if ( dot3( vTest, B) < 0.0f ) return false;
 
    HitPos = intersect_pos;
    return true;
-
 }
-
-
