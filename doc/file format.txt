@@ -1,0 +1,14 @@
+one vertex per line
+the cell centers are assigned in Terrain::load_data(char* filename)
+x center: average of x tile boundaries
+z center: average of z tile boundaries
+y "center": highest y in the tile
+
+The tiles are arranged so that all columns are read first, then the next entire row.
+First four vertices in the input file are tile 0, 0
+Next four are tile 0, 1
+Next n are up to tile 0, n
+Next four are tile 1, 0
+Until tile m, n
+
+The sample file is 50 x 50 x 1 tiles and all files should be that way (small scopers)

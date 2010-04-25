@@ -12,6 +12,7 @@ struct rotate_record
 class Model
 {
 public:
-    Vertex position;
+    Vertex position; //where it goes in game-world coordinates
+    GLdouble screen_x, screen_y; //where it goes on the screen
     rotate_record rot;    
 };

@@ -1,0 +1,85 @@
+This document details the libraries that ARMinis depends on and how ARMinis uses them.
+
+The necessary libraries are
+GTK+ 2.0
+ File Chooser -- GtkFileChooser
+ UI Buttons and text fields -- GtkComboBox, GtkButton, GtkEntry
+ Windows to put these in -- GtkWidget, GtkDialog
+gtkglarea
+ create_glarea
+ARToolkit
+ 
+freeglut
+ *ARToolkit depends on it*
+ Displaying the 3d objects
+ Animations
+
+Our general architecture will divide our objects as Models, a View component, and a Control component. View displays the model with modified transformations such as rotations and translations, without modifying it. Control responds to a user input and changes the model according to the function and input. View then gets its data from the model again and redisplays in a loop until the user decides to exit with an exit input. 
+
+Load a model
+ In the models dialog, the user clicks the 'load model icon'.
+  This calls a GtkFileChooser. We get the filename from the field using <<gtk_file_chooser_get_current_folder>> and <<gtk_file_chooser_get_filename>>.
+ The 'load model icon' is then replaced with the model loaded from the filename. 
+ A new 'load model icon' is appended to the list of models displayed in the model dialog.
+ The load function will read in placement and color of the model's polygons. The model will be given default equipment (tunic, breeches, bare-handed). 
+ The loaded model is appended to a list of loaded actor models. It can be a base model or a previously modified and saved model.
+ Actually loading the model involves reading from a .obj file. 
+
+Modify a model
+ The user right-clicks the desired model on its place in the models dialog widget.
+ A context menu appears by calling <<glutCreateMenu>>, <<glutAddMenuEntry>>, and <<glutAttachMenu>>. This menu will contain 'Change Equipment' and 'Adjust Color', among other options. Choosing 'Change Equipment' will open the 'Equipment' dialog. Choosing 'Adjust Color' will open the 'Color Choose' dialog.
+ These dialogs can be created, displayed with the GTK function <<gtk_widget_show>>, and deleted to free memory.
+  'Equipment' will display the current model in the gtkglarea in a glut display function <<glutDisplayFunc>>. The user can select from labeled combo boxes what will go in the model's hand, torso, and legs slots. The choices will depend on the slot and can be referenced with the function <<gtk_combo_box_get_active>>.
+   Hand
+    Hammer
+    Crossbow
+    None
+   Torso
+    Chainmail
+    Tunic
+    None
+   Legs 
+    Breeches
+    None
+   The selected equipment will affect <<the plotting function that displays the model>>.
+  'Adjust Color' shows a dialog with three GtkLabel'd GtkEntry (GtkEntry == text field) from which we can extract R, G, and B values using <<gtk_entry_get_text>>. The color can be previewed in a 50 x 50 px square in the dialog with the click of a 'Preview' GtkButton. The signal is bound to the button with <<gtk_signal_connect>> and added to the dialog with <<gtk_container_add>>. The square is shown within a gtkglarea, created with <<create_glarea>>. When the 'Set Color' GtkButton is clicked, the model is changed and will from now on be displayed using the new RGB values.
+
+Save a Model
+The user can save a model by calling the model's context menu in the model window with a right click. Doing so calls a GtkFileChooser from which we can get the desired filename as with loading models. We write the file in the same format as ones we load from, using stdio operations such as fprintf. The file will be stored as plain text. Relatie polygon positions and colors will be saved. 
+
+Import Terrain
+ The filename of the terrain can be evinced with <<gtk_file_chooser_get_current_folder>> and a GtkFileChooser. Once this is determined, the model is read from a .obj and its vertices and colors are determined. 
+ The object that contains the terrain will have a member called grid, which is a two-dimensional array containing 2500 center x-y vertices as if the terrain were arranged into 50 x 50 regular cells. These vertices will determine the actor models' x, y positions when they are moved into a cell.  
+ This terrain and the models that go on it will only be visible when our AR marker is detected by video. ARToolkit programs have the same basic control flow supported by its library functions. 
+
+Step	 				Functions
+1. Initialize the application		init
+2. Grab a video input frame 		arVideoGetImage (called in mainLoop)
+3. Detect the markers 			arDetectMarker (called in mainLoop)
+4. Calculate camera transformation 	arGetTransMat (called in mainLoop)
+5. Draw the virtual objects 		draw (called in mainLoop)
+6. Close the video capture down 	cleanup
+
+We detect the marker with <<arDetectMarker>> and draw our models with <<draw>>. Within <<draw>> we will display a modified version of the terrain that has been rotated and translated. We then iterate through a list of visible models and position them in the center of their cells. The position is recorded in the model object. 
+
+Drag Model onto Terrain
+ freeglut is aware of mouse buttons and positons with the constants GLUT_LEFT_BUTTON, GLUT_MIDDLE_BUTTON, and GLUT_RIGHT_BUTTON. It also uses the states GLUT_DOWN and GLUT_UP to keep track of when the mouse button is up or down. From this and probably a few more flags we can build a function which tracks mouse position and the model's location using object properties. The position of the model will be pigeonholed to the nearest of 50 x 50 cells. This can be done based on the model's center vertex and translating based on a distance equation.
+
+Animations Actor Model 
+ Skeletal animations rely on 'bone' data structures. Each bone has starting and ending vertices in each dimension, saved as object members. These can be plotted with the GLUT/freeglut function <<glVertex3f>>. Our own skeletal data structures will be very simple and include about 10 bones. Animation functions will modify bone positions in one or many loops. Textures can be placed on these bones with <<glBindTexture>>. 
+ The actions can be called within an 'Animate' submenu of the model's context menu, called by right-clicking the model. 
+
+Move model from one square to another with moveto command
+ Because we're using a simple model-view-controller design, we can modify the model's (x, y, z) position with the Control component, and when it is displayed again, the Display component will place the model in the correct location.
+ The input for doing so will be a context menu entry using <<glutCreateMenu>>, <<glutAddMenuEntry>>, and <<glutAttachMenu>>. This can apply a function that awaits a left-click by checking for GLUT_LEFT_BUTTON being in the GLUT_DOWN state. This function will take the mouse position and compare it to the set of grid center points that have been transformed by our View component. It will respond to mouse movements to highlight the cell currently closest to the mouse. The model will go in the center of this highlighted cell. Highlighting will be done by adjusting the RGB value of that part of the terrain, and displaying it in a loop.
+
+Rotate the map
+ freeglut registers arrow and ctrl keys as well as whether the right mouse button is up or down with enumerated constants. These can be watched for in GLUT functions that wait just for these special inputs. The map can be rotated in the body of a function called by <<glutSpecialFunc>>, which waits for special keys to be pressed and executes a specified callback. Rotation is done with <<glRotatef>> being called in the display function.
+
+Remove model from the terrain
+ Removing a model from the terrain but not the program's memory will involve setting the model object's position to (-1, -1, 0). Because we'll only check positions from 0 to 49, this will not place the model on the terrain. Removing the model from the dialog window from its context menu will delete the model from the list of models in the dialog, and from the heap.
+
+Other:
+Display
+ To display our openGL components, we execute callbacks depending on what we want to display. Displaying our objects is done between calls of <<glBegin>> and <<glEnd>>. We can draw points, lines, and polygons this way. freeglut also supports the abstracted display of spheres and toruses. We determine their positions with calls to <<glTranslatef>>, <<glRotatef>> and <<glScalef>>, and draw them with <<glVertex3f>>. The display of these objects will be encapsulated into a single View component, so that models are hidden from the information within the View component.
+

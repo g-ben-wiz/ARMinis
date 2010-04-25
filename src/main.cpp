@@ -204,12 +204,10 @@ void mouse_foo(int button, int state, int x, int y)
 
                 base_low.x = pos_x - 15.0;
                 base_low.y = pos_y;
-                //base_low.z = pos_z - 15.0;
                 base_low.z = pos_z;
 
                 base_high.x = pos_x + 15.0;
                 base_high.y = pos_y;
-                //base_high.z = pos_z + 15.0;
                 base_high.z = pos_z; 
 
                 gluUnProject ((double) x, d_click_y, 1.0, model_matrix, proj_matrix, viewport, &clickray_far.x, &clickray_far.y, &clickray_far.z);
@@ -217,7 +215,10 @@ void mouse_foo(int button, int state, int x, int y)
 
                 //
                 if (check_line_tri(base_low, base_high, top, clickray_near, clickray_far, hit_pos))
+                {    
+                    control.dragged_piece = *it;
                     printf("%f %f %f\n", hit_pos.x, hit_pos.y, hit_pos.z);
+                }
             
             }
 
@@ -227,9 +228,16 @@ void mouse_foo(int button, int state, int x, int y)
 
 void process_dragging(int x, int y)
 {
-    
-            //for drag for x 
-            // objPos += mouseMovementx*scale*RightAxis
+    GLdouble model_matrix[16];
+    GLdouble proj_matrix[16];
+    int viewport[4];
+
+    glGetDoublev(GL_MODELVIEW_MATRIX,model_matrix);
+    glGetDoublev(GL_PROJECTION_MATRIX,proj_matrix);
+    glGetIntegerv(GL_VIEWPORT,viewport);
+//    d_click_y = double (viewport[3] - y - 1);
+
+    control.drag(&terrain, x, y, model_matrix, proj_matrix, viewport); 
 }
 
 void render()
