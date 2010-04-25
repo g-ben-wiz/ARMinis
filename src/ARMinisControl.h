@@ -16,7 +16,7 @@ public:
     void move_to(Piece *p, Terrain *t, float x, float y, float z);
 
     void start_drag(Piece *p);
-    void drag(Piece *p, float screen_x, float screen_y, float screen_z);
+    void drag(Piece *p, Terrain *t, float x, float y, float z);
     void drop();
 
 	void setTerrain (Terrain* t);
