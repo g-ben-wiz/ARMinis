@@ -28,40 +28,36 @@ void ARMinisControl::start_drag(Piece *p)
 
 void ARMinisControl::drag(Terrain *t, float screen_x, float screen_y, GLdouble *model, GLdouble *project, GLint *view)
 {
-    //for x
-    //objPos += movement_x * scale * right_axis
+    if (dragged_piece)
+    {
+        GLdouble mod_scr_x, mod_scr_y, mod_scr_z; 
 
-    Vertex world_place;
+        gluProject(dragged_piece->position.x, dragged_piece->position.y, dragged_piece->position.z, model, project, view, &mod_scr_x, &mod_scr_y, &mod_scr_z);
 
-    GLdouble mod_scr_x, mod_scr_y, mod_scr_z; 
+        //these blocks work if cam is facing piece's face
+        //for being behind piece or on its sides it will be different
+        if (screen_x - mod_scr_x <= -t->tile_len_x  )
+        {
+            dragged_piece->position.x -= t->tile_len_x;
+            return;
+        }
+        if (mod_scr_x - screen_x <= -t->tile_len_x  )
+        {
+            dragged_piece->position.x += t->tile_len_x;
+            return;
+        }
+        /*if (screen_y - mod_scr_y <= -45.0  )
+        {
+            dragged_piece->position.z -= t->tile_len_z;
+            return;
+        }
+        if (mod_scr_y - screen_y <= -45.0  )
+        {
+            dragged_piece->position.z += t->tile_len_z;
+            return;
+        }*/
+    }
 
-    /* naw son:
-    project dragged_piece's position to model.screen_x and model.screen_y
-    if screen_x is less than dragged_piece.screen_x by 'a bunch' (trial/error)
-     move_to model to go one x-tile less
-    if screen_x is greater than model.screen_x by a bunch
-     move_to model to go one x-tile more
-
-    if screen_y is less than dragged_piece.screen_y by 'a bunch' (trial/error)
-     move_to model to go one z-tile less
-    if screen_y is greater than model.screen_y by a bunch
-     move_to model to go one z-tile more
-    */
-
-    gluProject(dragged_piece->position.x, dragged_piece->position.y, dragged_piece->position.z, model, project, view, &mod_scr_x, &mod_scr_y, &mod_scr_z);
-
-    //this only works if model is facing you
-    //need to move to 'close to cursor' instead of 
-    //adding or subtracting based one where cursor is
-
-    if (screen_x - mod_scr_x <= -15.0)
-        dragged_piece->position.x -= 25.0;
-
-    if (mod_scr_x - screen_x <= -15.0)
-        dragged_piece->position.x += 25.0;
-
-
-    //move_to(dragged_piece, t, world_place.x, world_place.y, world_place.z);
 }
 
 void ARMinisControl::drop()

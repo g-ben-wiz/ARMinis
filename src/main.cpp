@@ -29,8 +29,13 @@ int main(int argc, char** argv)
     Piece *dwarf = new Piece();
     dwarf->load_data("../model/dwarf.mod");
     ::view.piece_list.push_back(dwarf);
-    
     control.move_to(dwarf, &terrain, 30 * 30.f, 0.f, 30 * 30.f); 
+
+
+    Piece *dwarf2 = new Piece();
+    dwarf2->load_data("../model/dwarf.mod");
+    ::view.piece_list.push_back(dwarf2);
+    control.move_to(dwarf2, &terrain, 35 * 30.f, 0.f, 30 * 30.f); 
     
 	glutInit(&argc, argv);
 	glutInitWindowPosition(0, 0);
@@ -213,16 +218,23 @@ void mouse_foo(int button, int state, int x, int y)
                 gluUnProject ((double) x, d_click_y, 1.0, model_matrix, proj_matrix, viewport, &clickray_far.x, &clickray_far.y, &clickray_far.z);
                 gluUnProject ((double) x, d_click_y, 0.0, model_matrix, proj_matrix, viewport, &clickray_near.x, &clickray_near.y, &clickray_near.z);
 
-                //
                 if (check_line_tri(base_low, base_high, top, clickray_near, clickray_far, hit_pos))
                 {    
-                    control.dragged_piece = *it;
                     printf("%f %f %f\n", hit_pos.x, hit_pos.y, hit_pos.z);
+                    control.dragged_piece = *it;
                 }
-            
+/*                else
+               {
+                    control.dragged_piece = NULL;
+                }
+*/            
             }
 
         }
+    }
+    else if (state == GLUT_UP)
+    {
+        control.dragged_piece = NULL;
     }
 }
 
