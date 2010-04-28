@@ -220,14 +220,9 @@ void mouse_foo(int button, int state, int x, int y)
 
                 if (check_line_tri(base_low, base_high, top, clickray_near, clickray_far, hit_pos))
                 {    
-                    printf("%f %f %f\n", hit_pos.x, hit_pos.y, hit_pos.z);
+//                    printf("%f %f %f\n", hit_pos.x, hit_pos.y, hit_pos.z);
                     control.dragged_piece = *it;
                 }
-/*                else
-               {
-                    control.dragged_piece = NULL;
-                }
-*/            
             }
 
         }
