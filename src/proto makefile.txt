@@ -1,1 +1,5 @@
-g++ -o ARMinis main.cpp -I /usr/include/ -L /usr/lib/ -lglut -lGL -lGLU -lX11 -lXmu -lXi -lm 
+g++ -o ../bin/ARMinis main.cpp -I /usr/include/ -L /usr/lib/ -lglut -lGL -lGLU -lX11 -lXmu -lXi -lm -lARgsub -lARvideo -lAR -lglut -lGLU -lGL -lXi -lX11 -lm -lpthread -pthread -lgstreamer-0.10 -lgobject-2.0 -lgmodule-2.0 -lgthread-2.0 -lrt -lxml2 -lglib-2.0
+
+
+make sure include contents are inside your include directory
+make sure lib contents are inside your lib directory

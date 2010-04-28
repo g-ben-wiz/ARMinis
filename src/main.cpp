@@ -7,6 +7,9 @@
 
 #include "ARMinisControl.cpp"
 
+#include "Pattern.cpp"
+
+void init();
 void render();
 void normal_key_foo(unsigned char key, int x, int y);
 void special_key_foo(int key, int x, int y);
@@ -14,16 +17,23 @@ void mouse_foo(int button, int state, int x, int y);
 void process_dragging(int x, int y);
 void reshape(int width, int height);
 void refresh_camera();
+void ar_loop();
 bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2, Vertex &HitPos);
 
 Terrain terrain;
 ARMinisView view;
 ARMinisControl control;
+Pattern patt;
 
 int main(int argc, char** argv)
 {
 	::view.setTerrain(&terrain);
     ::control.set_view(&view);
+
+    patt.name = "Data/wiz_hat.patt";
+    patt.width = 80.0;
+    patt.center[0] = 0.0;
+    patt.center[1] = 100.0;
 
     terrain.load_data("../terrain/dwarven-ruin.map");
 
@@ -39,13 +49,19 @@ int main(int argc, char** argv)
     control.move_to(dwarf2, &terrain, 35 * 30.f, 0.f, 30 * 30.f); 
     
 	glutInit(&argc, argv);
-	glutInitWindowPosition(0, 0);
-	glutInitWindowSize(800, 680);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB | GLUT_DOUBLE); 
+    init();
+    glutMotionFunc(process_dragging);
 
-	glutCreateWindow("ARMinis");
+    arVideoCapStart();
+    argMainLoop( mouse_foo, normal_key_foo, ar_loop);
 
-	glEnable(GL_DEPTH_TEST);
+//	glutInitWindowPosition(0, 0);
+//	glutInitWindowSize(800, 680);
+//	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB | GLUT_DOUBLE); 
+
+//	glutCreateWindow("ARMinis");
+
+/*	glEnable(GL_DEPTH_TEST);
 
 	glutIdleFunc(render);
 	glutReshapeFunc(reshape);
@@ -54,8 +70,8 @@ int main(int argc, char** argv)
     glutSpecialFunc(special_key_foo);
 
     glutMouseFunc(mouse_foo);
-    glutMotionFunc(process_dragging);
 	glutMainLoop();
+*/
 
 	return 0;
 }
@@ -69,7 +85,6 @@ void reshape(int width, int height)
 	glViewport(0, 0, width, height); 
 
     refresh_camera();
-
 }
 
 void refresh_camera()
@@ -94,11 +109,107 @@ void refresh_camera()
     delete(cam);
 }
 
+void init()
+{
+    ARParam cparam;
+    char *cparam_name = "Data/camera_para.dat";
+    ARParam wparam;
+    int x_size, y_size;
+    
+    if (arVideoOpen ("") < 0)
+        exit(0);
+
+    if (arVideoInqSize(&x_size, &y_size) < 0)
+        exit(0);
+
+
+    if (arParamLoad(cparam_name, 1, &wparam) < 0)
+    {
+        printf("Not finding cparam_name\n");
+        exit(0);
+    }
+
+    arParamChangeSize( &wparam, x_size, y_size, &cparam);
+    arInitCparam (&cparam);
+    printf("Cam Param\n");
+    arParamDisp (&cparam);
+
+    if ((patt.id = arLoadPatt(patt.name)) < 0)
+    {
+        printf("Pattern load error\n");
+        exit(0);
+    }
+
+    argInit( &cparam, 1.0, 0, 0, 0, 0);
+}
+
+void cleanup()
+{
+    arVideoCapStop();
+    arVideoClose();
+    argCleanup();
+}
+
+void ar_loop()
+{
+    int thresh = 200;
+
+    ARUint8 *data_ptr;
+    ARMarkerInfo *marker_info;
+    int marker_num; 
+    int j, k;
+
+    if ((data_ptr = (ARUint8 *)arVideoGetImage()) == NULL)
+    {
+        arUtilSleep(2);
+        return;
+    }
+
+    argDrawMode2D();
+    argDispImage(data_ptr, 0, 0);
+
+    if (arDetectMarker(data_ptr, thresh, &marker_info, &marker_num) < 0) 
+    {
+        cleanup();
+        exit(0);
+    }
+
+    arVideoCapNext();
+
+    //look for obj visibility
+    k = -1;
+    for (j = 0; j < marker_num; j++)
+    {
+        if (patt.id == marker_info[j].id )
+        {
+            if (k == 1)
+                k = j;
+            else if (marker_info[k].cf < marker_info[j].cf)
+                k = j;
+        }
+    }
+
+    if (k == -1)
+    {
+        argSwapBuffers();
+        return;
+    }
+
+    arGetTransMat(&marker_info[k], patt.center, patt.width, patt.trans);
+
+    render();
+
+    argSwapBuffers();
+
+}
+
 void normal_key_foo(unsigned char key, int x, int y) 
 {
     switch (key)
     {
         case 27:
+            printf("Bye.\n");
+            cleanup();
             exit(0);
             break;
         case 'z': 
@@ -250,13 +361,26 @@ void process_dragging(int x, int y)
 
 void render()
 {
+    double gl_para[16];
+
+    argDrawMode3D();
+    argDraw3dCamera(0, 0);
+    glClearDepth(1.0); 
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    argConvGlpara(patt.trans, gl_para);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixd (gl_para);
 
     //draw map
     view.drawTerrain();
 
     //draw all pieces in view.piece_list)
     view.drawPieces();
+
+    glDisable(GL_DEPTH_TEST);
 
     glutSwapBuffers();
 }

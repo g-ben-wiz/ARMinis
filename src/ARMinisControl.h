@@ -19,6 +19,7 @@ public:
     void start_drag(Piece *p);
     void drag(Terrain *t, float screen_x, float screen_y, GLdouble *model, GLdouble *project, GLint *view);
     void drop();
+    void board_govern(Terrain *t);
 
 	void setTerrain (Terrain* t);
     void set_view (ARMinisView *v);
