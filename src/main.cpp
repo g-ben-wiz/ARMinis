@@ -23,6 +23,7 @@ ARMinisControl control;
 int main(int argc, char** argv)
 {
 	::view.setTerrain(&terrain);
+    ::control.set_view(&view);
 
     terrain.load_data("../terrain/dwarven-ruin.map");
 

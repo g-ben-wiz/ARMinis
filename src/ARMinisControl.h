@@ -6,6 +6,7 @@ class ARMinisControl
 {
 private:
 	Terrain *terrain;
+    ARMinisView *view;
     GLUquadricObj *quadra;
 
 public:
@@ -20,4 +21,5 @@ public:
     void drop();
 
 	void setTerrain (Terrain* t);
+    void set_view (ARMinisView *v);
 };
