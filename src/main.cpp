@@ -20,12 +20,14 @@ void refresh_camera();
 void ar_loop();
 bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2, Vertex &HitPos);
 
+int thresh = 100;
+
 Terrain terrain;
 ARMinisView view;
 ARMinisControl control;
 Pattern patt;
 
-int main(int argc, char** argv)
+int main(int argc, char* argv[])
 {
 	::view.setTerrain(&terrain);
     ::control.set_view(&view);
@@ -51,9 +53,12 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);
     init();
     glutMotionFunc(process_dragging);
+	glutKeyboardFunc(normal_key_foo);	
+    glutSpecialFunc(special_key_foo);
 
     arVideoCapStart();
     argMainLoop( mouse_foo, normal_key_foo, ar_loop);
+
 
 //	glutInitWindowPosition(0, 0);
 //	glutInitWindowSize(800, 680);
@@ -65,9 +70,6 @@ int main(int argc, char** argv)
 
 	glutIdleFunc(render);
 	glutReshapeFunc(reshape);
-
-	glutKeyboardFunc(normal_key_foo);	
-    glutSpecialFunc(special_key_foo);
 
     glutMouseFunc(mouse_foo);
 	glutMainLoop();
@@ -152,8 +154,6 @@ void cleanup()
 
 void ar_loop()
 {
-    int thresh = 200;
-
     ARUint8 *data_ptr;
     ARMarkerInfo *marker_info;
     int marker_num; 
@@ -218,6 +218,17 @@ void normal_key_foo(unsigned char key, int x, int y)
         case 'x':
             ::view.zoom(-1, -1);
             break;
+        case '1':
+            thresh -= 5;
+        case '2':
+            thresh += 5;
+
+        if (thresh < 0)
+            thresh = 0;
+
+        if (thresh > 255)
+            thresh = 255;
+
     }
 }
 
