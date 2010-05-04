@@ -7,7 +7,6 @@
 #include <AR/param.h>
 #include <AR/ar.h>
 
-
 class Pattern
 {
     private:

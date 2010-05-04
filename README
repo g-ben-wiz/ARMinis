@@ -1,3 +1,6 @@
+You run the binary by typing ARMinis <terrain file> <model file>
+You can use multiple model files or the same one multiple times.
+
 Here are the packages we're using:
 
 sudo apt-get install mesa-common-dev mesademos libgl1-mesa-dev libglu1-mesa-dev freeglut3-dev

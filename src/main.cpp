@@ -30,6 +30,9 @@ Pattern patt;
 
 int main(int argc, char* argv[])
 {
+    int argi;
+    
+
 	::view.setTerrain(&terrain);
     ::control.set_view(&view);
 
@@ -38,21 +41,30 @@ int main(int argc, char* argv[])
     patt.center[0] = 0.0;
     patt.center[1] = 100.0;
 
-    terrain.load_data("../terrain/dwarven-ruin.map");
+    if (argc > 2)
+        terrain.load_data(argv[1]);
+    else
+    {
+        printf ("Usage: ARMinis terrainfile.map model.mod (can be multiple models models)\n");
+        exit(1);
+    }
 
-    Piece *dwarf = new Piece();
-    dwarf->load_data("../model/dwarf.mod");
-    ::view.piece_list.push_back(dwarf);
-    control.move_to(dwarf, &terrain, 30 * 30.f, 0.f, 30 * 30.f); 
-
-
+    for (argi = 1; argi < argc; argi++)
+    {  
+        Piece *p = new Piece();
+        p->load_data(argv[argi]);
+        ::view.piece_list.push_back(p);
+        control.move_to(p, &terrain, (30 + argi) * 30.f, 0.f, 30 * 30.f); 
+    }
+/*
     Piece *dwarf2 = new Piece();
     dwarf2->load_data("../model/dwarf.mod");
     ::view.piece_list.push_back(dwarf2);
     control.move_to(dwarf2, &terrain, 35 * 30.f, 0.f, 30 * 30.f); 
-    
+ */   
 	glutInit(&argc, argv);
     init();
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGBA | GLUT_DOUBLE); 
     glutMotionFunc(process_dragging);
 	glutKeyboardFunc(normal_key_foo);	
     glutSpecialFunc(special_key_foo);
@@ -63,7 +75,6 @@ int main(int argc, char* argv[])
 
 //	glutInitWindowPosition(0, 0);
 //	glutInitWindowSize(800, 680);
-//	glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB | GLUT_DOUBLE); 
 
 //	glutCreateWindow("ARMinis");
 
@@ -354,6 +365,7 @@ void render()
     argDrawMode3D();
     argDraw3dCamera(0, 0);
     glClearDepth(1.0); 
+    glDrawBuffer(GL_BACK);
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);

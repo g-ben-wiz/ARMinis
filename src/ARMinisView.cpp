@@ -80,6 +80,7 @@ void ARMinisView::drawTerrain()
 	//put a 3-square (150px) radius dais in the middle raised 30 px higher than the rest
 
 	//draw ground
+    glDisable(GL_LIGHTING);
     glPushMatrix();
 	glColor3f(0.6, 0.6, 0.6);
     	

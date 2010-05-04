@@ -47,26 +47,26 @@ void ARMinisControl::drag(Terrain *t, float screen_x, float screen_y, GLdouble *
         if (screen_x - mod_scr_x <= -t->tile_len_x )
         {
             dragged_piece->position.x -= t->tile_len_x * flip_coeff;
-//            board_govern(t);
+            //board_govern(t);
             return;
         }
         if (mod_scr_x - screen_x <= -t->tile_len_x  )
         {
             dragged_piece->position.x += t->tile_len_x * flip_coeff;
-//           board_govern(t);
+            //board_govern(t);
             return;
         }
      
         if (screen_y - mod_scr_y <= -105.0  )
         {
             dragged_piece->position.z -= t->tile_len_z * flip_coeff;
-//            board_govern(t);
+            //board_govern(t);
             return;
         }
         if (mod_scr_y - screen_y <= -15.0  )
         {
             dragged_piece->position.z += t->tile_len_z * flip_coeff;
-//           board_govern(t);
+            //board_govern(t);
             return;
         }
 
@@ -86,6 +86,7 @@ void ARMinisControl::board_govern(Terrain *t)
 
     if (dragged_piece->position.x < t->get_cell_center(0, 0).x)
         dragged_piece->position.x = t->get_cell_center(0, 0).x;
+
     if (dragged_piece->position.z < t->get_cell_center(0, 0).z)
         dragged_piece->position.z = t->get_cell_center(0, 0).z;
 
