@@ -21,6 +21,7 @@ void ar_loop();
 bool check_line_tri( Vertex TP1, Vertex TP2, Vertex TP3, Vertex LP1, Vertex LP2, Vertex &HitPos);
 
 int thresh = 100;
+#define VIEW_SCALEFACTOR 10.0
 
 Terrain terrain;
 ARMinisView view;
@@ -239,44 +240,20 @@ void special_key_foo(int key, int x, int y)
     switch (key)
     {
         case GLUT_KEY_LEFT :
-            if (mod == GLUT_ACTIVE_CTRL) 
-            {
-                ::view.cam.h_angle -= .03;
-                ::view.turn_cam();                       
-            }
-            else
-            {
-            }
+            ::view.cam.h_angle -= .03;
+            ::view.turn_cam();                       
             break;
         case GLUT_KEY_RIGHT:
-            if (mod == GLUT_ACTIVE_CTRL) 
-            {
-                ::view.cam.h_angle += .03;
-                ::view.turn_cam();                       
-            }
-            else 
-            {
-            }
+            ::view.cam.h_angle += .03;
+            ::view.turn_cam();                       
             break;
         case GLUT_KEY_UP:
-            if (mod == GLUT_ACTIVE_CTRL) 
-            {
-                ::view.cam.v_angle -= .03;
-                ::view.turn_cam();
-            }
-            else 
-            {
-            }
+            ::view.cam.v_angle -= .03;
+            ::view.turn_cam();
             break;
         case GLUT_KEY_DOWN:
-            if (mod == GLUT_ACTIVE_CTRL) 
-            {
-                ::view.cam.v_angle += .03;
-                ::view.turn_cam();
-            }
-            else
-            {
-            }
+            ::view.cam.v_angle += .03;
+            ::view.turn_cam();
     }
 }
 
@@ -383,6 +360,8 @@ void render()
 
     argConvGlpara(patt.trans, gl_para);
     glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
     glLoadMatrixd (gl_para);
 
     //draw map
